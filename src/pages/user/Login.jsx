@@ -1,85 +1,61 @@
-import { useState } from 'react';
+import React from 'react';
 
-export default function Login({ onLogin }) {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (username === 'admin' && password === '123') {
-      onLogin('admin');
-    } else if (username === 'user' && password === '123') {
-      onLogin('user');
-    } else {
-      alert('Username atau Password salah!');
-    }
-  };
-
+const Login = ({ onLogin }) => {
   return (
-    // Menggunakan Primary Cream (#F5F5DC) sebagai latar belakang utama
-    <div className="min-h-screen flex items-center justify-center bg-primary-cream px-4">
+   
+    <div className="min-h-screen flex items-center justify-center bg-stone-200">
       
-      {/* Card dengan aksen Border Accent Gold (#A67C52) */}
-      <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-3xl shadow-2xl border-t-8 border-accent-gold">
+      <div className="bg-white p-8 rounded-2xl shadow-xl w-96">
         
-        <div className="text-center">
-          {/* Ikon menggunakan Accent Gold (#A67C52) */}
-          <div className="mx-auto h-16 w-16 bg-accent-gold rounded-full mb-4 flex items-center justify-center shadow-md">
-             <span className="text-white text-3xl">☕</span>
-          </div>
-          {/* Teks menggunakan Primary Dark (#1A1A1B) */}
-          <h2 className="text-3xl font-bold text-primary-dark tracking-tight">
-            Kopi Wae
+        {/* BAGIAN JUDUL */}
+        <div className="text-center mb-6">
+          {/* text-3xl (ukuran teks besar), font-bold (tebal), text-amber-900 (warna coklat kopi tua) */}
+          <h2 className="text-3xl font-bold text-amber-900">
+            Coffee Wae
           </h2>
-          <p className="mt-2 text-sm text-secondary-dark/70">
-            Selamat datang kembali! Silakan masuk ke akun Anda.
-          </p>
+          {/* text-gray-500 (teks abu-abu), mt-2 (margin atas ukuran 2) */}
+          <p className="text-gray-500 mt-2">Masuk ke akun pelangganmu</p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-secondary-dark uppercase tracking-wider ml-1 mb-1">
-                Username
-              </label>
-              <input 
-                type="text" 
-                required
-                className="block w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-accent-gold focus:border-transparent transition-all outline-none"
-                placeholder="Masukkan username" 
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-secondary-dark uppercase tracking-wider ml-1 mb-1">
-                Password
-              </label>
-              <input 
-                type="password" 
-                required
-                className="block w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-accent-gold focus:border-transparent transition-all outline-none"
-                placeholder="••••••••" 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
+        {/* BAGIAN FORM (Bungkus inputan pakai flex ke bawah/column) */}
+        <div className="flex flex-col gap-4">
+          
+          {/* INPUT EMAIL */}
+          <div>
+            {/* text-sm (teks kecil), font-semibold (agak tebal), text-gray-700 */}
+            <label className="text-sm font-semibold text-gray-700">Email</label>
+            <input 
+              type="email" 
+              placeholder="nama@email.com"
+            
+              className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+            />
           </div>
 
-          {/* Tombol menggunakan Accent Gold (#A67C52) dan Hover Gold (#8E6A45) */}
+          {/* INPUT PASSWORD */}
+          <div>
+            <label className="text-sm font-semibold text-gray-700">Password</label>
+            <input 
+              type="password" 
+              placeholder="••••••••"
+              className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+            />
+          </div>
+
+          {/* TOMBOL LOGIN */}
           <button 
-            type="submit" 
-            className="w-full py-4 rounded-xl text-white bg-accent-gold hover:bg-hover-gold font-bold shadow-lg transition-all duration-300 transform hover:scale-[1.01] active:scale-[0.98]"
+            /* Karena di App.jsx kamu butuh onLogin buat ubah role ke 'user', kita panggil fungsinya di sini */
+            onClick={() => onLogin('user')}
+          
+            className="w-full mt-4 bg-amber-800 hover:bg-amber-900 text-white font-bold py-2 px-4 rounded-lg transition-colors"
           >
             Masuk Sekarang
           </button>
-        </form>
-        
-        <p className="text-center text-xs text-secondary-dark/50 mt-6 font-medium">
-          © 2026 Kopi Wae. All rights reserved.
-        </p>
+          
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default Login;

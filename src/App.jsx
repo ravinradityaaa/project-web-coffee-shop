@@ -22,16 +22,28 @@ function App() {
             <Route path="produk" element={<div>Halaman Kelola Produk (Admin)</div>} />
           </Route>
         ) : (
-          /* AREA USER */
-          /* 3. Bungkus dengan UserLayout */
-          <Route path="/home" element={
-            <UserLayout>
-              <div style={{ padding: '20px' }}>
-                <h1>Halaman Utama Pelanggan</h1>
-                <button onClick={() => setRole('guest')}>Logout</button>
-              </div>
-            </UserLayout>
-          } />
+        /* AREA USER */
+        <Route path="/home" element={
+          <UserLayout>
+            {/* Mengganti inline style dengan class Tailwind */}
+            <div className="p-8 bg-stone-100 min-h-screen flex flex-col items-center justify-center">
+              
+              {/* Styling untuk Heading */}
+              <h1 className="text-3xl font-bold text-amber-900 mb-6 shadow-sm">
+                Halaman Utama Pelanggan
+              </h1>
+              
+              {/* Styling untuk Button */}
+              <button 
+                onClick={() => setRole('guest')}
+                className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300"
+              >
+                Logout
+              </button>
+              
+            </div>
+          </UserLayout>
+        } />
         )}
 
         {/* PROTEKSI REDIRECT */}
