@@ -227,18 +227,84 @@ export default function Home() {
             ))}
           </div>
         </div>
-
-        {/* --- FOOTER SIMPEL --- */}
-        <div className="max-w-7xl mx-auto px-10 pt-40 pb-10 flex flex-col md:flex-row justify-between items-center opacity-20 text-[10px] font-black uppercase tracking-[0.5em] gap-8">
-           <p>© 2026 Kopi Wae Indonesia</p>
-           <div className="flex gap-10">
-              <a href="#">Instagram</a>
-              <a href="#">Twitter</a>
-              <a href="#">Spotify</a>
-           </div>
-           <p>Est. Magelang</p>
-        </div>
       </section>
+
+      {/* --- FOOTER SECTION --- */}
+      <footer className={`py-24 px-10 transition-colors duration-700 ${isDarkMode ? 'bg-[#121212] text-white' : 'bg-[#FDFDF7] text-[#1A1A1B]'}`}>
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-16 mb-20">
+            
+            {/* Kolom 1: Brand Info */}
+            <div className="md:col-span-1">
+              <h3 className="text-3xl font-black tracking-tighter mb-6 uppercase italic">Kopi <span className="text-[#A67C52]">Wae</span></h3>
+              <p className="text-sm opacity-60 leading-relaxed mb-8">
+                Menyajikan kehangatan dari biji kopi pilihan langsung dari tanah Magelang. Kami percaya setiap tetes kopi memiliki cerita dan semangat yang berbeda.
+              </p>
+              <div className="flex gap-4">
+                <a href="#" className="h-10 w-10 rounded-full border border-current/20 flex items-center justify-center hover:bg-[#A67C52] hover:text-white transition-all">IG</a>
+                <a href="#" className="h-10 w-10 rounded-full border border-current/20 flex items-center justify-center hover:bg-[#A67C52] hover:text-white transition-all">FB</a>
+                <a href="#" className="h-10 w-10 rounded-full border border-current/20 flex items-center justify-center hover:bg-[#A67C52] hover:text-white transition-all">TW</a>
+              </div>
+            </div>
+
+            {/* Kolom 2: Quick Links */}
+            <div>
+              <h4 className="text-xs font-black uppercase tracking-[0.3em] text-[#A67C52] mb-8">Tautan Cepat</h4>
+              <ul className="space-y-4 text-sm font-bold uppercase tracking-widest opacity-70">
+                <li className="hover:text-[#A67C52] transition-colors"><a href="#">Beranda</a></li>
+                <li className="hover:text-[#A67C52] transition-colors"><a href="#">Menu Kami</a></li>
+                <li className="hover:text-[#A67C52] transition-colors"><a href="#">Tentang Kami</a></li>
+                <li className="hover:text-[#A67C52] transition-colors"><a href="#">Kontak</a></li>
+              </ul>
+            </div>
+
+            {/* Kolom 3: Contact & Address */}
+            <div>
+              <h4 className="text-xs font-black uppercase tracking-[0.3em] text-[#A67C52] mb-8">Lokasi & Kontak</h4>
+              <div className="text-sm space-y-6 opacity-70">
+                <div>
+                  <p className="font-black uppercase mb-1">Workshop Magelang</p>
+                  <p className="leading-relaxed italic">Jl. Glondong No. 12, Magelang Utara, Jawa Tengah, Indonesia.</p>
+                </div>
+                <div>
+                  <p className="font-black uppercase mb-1">Email</p>
+                  <p className="italic">hello@kopiwae.id</p>
+                </div>
+                <div>
+                  <p className="font-black uppercase mb-1">WhatsApp</p>
+                  <p className="italic">+62 812-3456-7890</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Kolom 4: Newsletter */}
+            <div>
+              <h4 className="text-xs font-black uppercase tracking-[0.3em] text-[#A67C52] mb-8">Berlangganan</h4>
+              <p className="text-sm opacity-60 mb-6">Dapatkan info promo dan menu musiman terbaru.</p>
+              <div className="relative">
+                <input 
+                  type="email" 
+                  placeholder="Email anda..." 
+                  className="w-full bg-transparent border-b-2 border-current/20 py-3 text-sm focus:border-[#A67C52] outline-none transition-all italic"
+                />
+                <button className="absolute right-0 top-1/2 -translate-y-1/2 text-[10px] font-black uppercase tracking-widest text-[#A67C52]">Kirim</button>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Bottom Bar */}
+          <div className="pt-10 border-t border-current/10 flex flex-col md:flex-row justify-between items-center gap-6">
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-30">
+              © 2026 Kopi Wae Indonesia — Est. Magelang
+            </p>
+            <div className="flex gap-8 text-[10px] font-black uppercase tracking-[0.2em] opacity-30">
+              <a href="#" className="hover:opacity-100 transition-opacity">Privacy Policy</a>
+              <a href="#" className="hover:opacity-100 transition-opacity">Terms of Service</a>
+            </div>
+          </div>
+        </div>
+      </footer>
 
       {/* --- FLOATING ORDER TRACKER --- */}
       {isOrdering && (
