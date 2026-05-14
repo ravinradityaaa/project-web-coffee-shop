@@ -5,6 +5,8 @@ import AdminLayout from './layouts/AdminLayout';
 import Dashboard from './pages/admin/Dashboard';
 import UserLayout from './layouts/UserLayout'; // 1. Import Layout User
 import Home from './pages/user/Home';          // 2. Import Halaman Home
+import ManajemenKategori from './pages/admin/ManajemenKategori';
+import ManajemenProduk from './pages/admin/ManajemenProduk';
 
 function App() {
   const [role, setRole] = useState('guest');
@@ -20,6 +22,8 @@ function App() {
           <Route path="/admin" element={<AdminLayout onLogout={() => setRole('guest')} />}>
             <Route index element={<Dashboard />} />
             <Route path="produk" element={<div>Halaman Kelola Produk (Admin)</div>} />
+            <Route path="kategori" element={<ManajemenKategori />} />
+            <Route path="produk" element={<ManajemenProduk />} />
           </Route>
         ) : (
         /* AREA USER */
