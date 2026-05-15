@@ -1,10 +1,10 @@
 // src/layouts/UserLayout.jsx
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // 1. Tambahkan import
+import { useNavigate, Link } from 'react-router-dom'; // Menambahkan Link untuk navigasi
 
 const UserLayout = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const navigate = useNavigate(); // 2. Inisialisasi navigate
+  const navigate = useNavigate();
 
   // Fungsi navigasi ke halaman ListProduk
   const handleNavMenu = () => {
@@ -28,7 +28,9 @@ const UserLayout = ({ children }) => {
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center gap-8 text-[11px] font-bold tracking-widest uppercase">
-          <a href="#" className="hover:text-amber-600 transition">Our Story</a>
+          {/* Menggunakan Link untuk navigasi ke Beranda (/) */}
+          <Link to="/" className="hover:text-amber-600 transition">Beranda</Link>
+          
           {/* Tombol Menu Desktop */}
           <button 
             onClick={handleNavMenu} 
@@ -36,6 +38,7 @@ const UserLayout = ({ children }) => {
           >
             Menu
           </button>
+          
           <a href="#" className="hover:text-amber-600 transition">Shop Online</a>
           <a href="#" className="hover:text-amber-600 transition">Locations</a>
           <a href="#" className="hover:text-amber-600 transition">Daftar/Masuk</a>
@@ -64,14 +67,18 @@ const UserLayout = ({ children }) => {
       {/* Mobile Sidebar Menu */}
       <div className={`lg:hidden fixed inset-0 z-[90] bg-[#1a1a1a] transition-transform duration-500 ease-in-out ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <nav className="flex flex-col items-center justify-center h-full gap-8 text-xl font-black uppercase tracking-widest text-center">
-          <a href="#" onClick={() => setIsMenuOpen(false)}>Our Story</a>
+          {/* Navigasi Beranda Mobile */}
+          <Link to="/" onClick={() => setIsMenuOpen(false)}>Beranda</Link>
+          
           {/* Tombol Menu Mobile */}
           <button onClick={handleNavMenu} className="text-amber-600 hover:text-white transition uppercase font-black">
             Menu
           </button>
+          
           <a href="#" onClick={() => setIsMenuOpen(false)}>Shop Online</a>
           <a href="#" onClick={() => setIsMenuOpen(false)}>Locations</a>
           <a href="#" onClick={() => setIsMenuOpen(false)}>Daftar/Masuk</a>
+          
           <button onClick={handleNavMenu} className="mt-4 bg-[#a87a55] px-10 py-4 rounded-full text-sm font-black uppercase tracking-[0.2em]">
             Order Now
           </button>

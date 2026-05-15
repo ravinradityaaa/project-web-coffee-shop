@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import ListProduk from './ListProduk'; 
 import Register from './Register'; // Pastikan file Register.jsx sudah kamu buat
 
 export default function Home() {
@@ -25,6 +24,12 @@ export default function Home() {
       desc: "Energi murni dari biji pilihan dengan aroma yang sangat kuat.", 
       img: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?q=80&w=1000&auto=format&fit=crop" 
     },
+  ];
+
+  const features = [
+    { id: 1, title: "Slow Bar Experience", icon: "⚖️", desc: "Nikmati penyeduhan manual dengan teknik presisi tinggi untuk rasa yang otentik." },
+    { id: 2, title: "Ethically Sourced", icon: "🌱", desc: "Bekerja sama langsung dengan petani lokal Magelang untuk kualitas terbaik." },
+    { id: 3, title: "Modern Roastery", icon: "🔥", desc: "Biji kopi disangrai segar setiap hari di workshop kami untuk menjaga aroma." },
   ];
 
   const testimonials = [
@@ -63,15 +68,6 @@ export default function Home() {
       {/* --- TOP CONTROLS --- */}
       <div className="fixed top-8 right-8 z-[120] flex items-center space-x-4">
         <button 
-          onClick={() => setShowRegister(true)}
-          className={`px-8 py-4 rounded-full font-black text-[10px] uppercase tracking-widest backdrop-blur-xl border transition-all duration-500 shadow-2xl
-            ${isDarkMode 
-              ? 'bg-white/10 border-white/20 text-white hover:bg-[#A67C52]' 
-              : 'bg-[#1A1A1B]/10 border-black/10 text-[#1A1A1B] hover:bg-[#A67C52] hover:text-white'}`}
-        >
-          Join Member
-        </button>
-        <button 
           onClick={() => setIsDarkMode(!isDarkMode)}
           className="h-14 w-14 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center shadow-2xl"
         >
@@ -94,7 +90,7 @@ export default function Home() {
           </p>
           <div className="flex items-center space-x-6">
             <button 
-              onClick={() => document.getElementById('menu-section').scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => document.getElementById('feature-section').scrollIntoView({ behavior: 'smooth' })}
               className={`h-16 w-16 rounded-full flex items-center justify-center hover:bg-[#A67C52] transition-all duration-500 shadow-2xl ${
                 isDarkMode ? 'bg-white text-[#1A1A1B]' : 'bg-[#1A1A1B] text-white'
               }`}
@@ -159,7 +155,26 @@ export default function Home() {
         </div>
       </section>
 
-      <ListProduk isDarkMode={isDarkMode} onOrder={handleOrder} />
+      {/* --- 4. FEATURE SECTION (Ganti ListProduk) --- */}
+      <section id="feature-section" className={`py-40 transition-colors duration-1000 ${isDarkMode ? 'bg-[#1A1A1B]' : 'bg-[#FDFDF7]'}`}>
+        <div className="max-w-7xl mx-auto px-10">
+          <div className="text-center mb-24">
+            <span className="text-[#A67C52] font-black text-xs uppercase tracking-[0.6em] mb-4 inline-block">Kenapa Kami</span>
+            <h2 className="text-6xl md:text-8xl font-black tracking-tighter uppercase italic">LEBIH DARI <br /> <span className="text-[#A67C52]">SEKADAR KOPI</span></h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
+            {features.map(f => (
+              <div key={f.id} className="relative group p-12 rounded-[4rem] border border-current/5 hover:bg-[#A67C52] transition-all duration-700">
+                <div className="text-6xl mb-8 group-hover:scale-110 transition-transform duration-500 inline-block">{f.icon}</div>
+                <h3 className="text-3xl font-black uppercase tracking-tighter mb-4 group-hover:text-white transition-colors">{f.title}</h3>
+                <p className="text-lg opacity-60 leading-relaxed group-hover:text-white group-hover:opacity-90 transition-all">{f.desc}</p>
+                <div className="mt-10 h-1 w-0 group-hover:w-full bg-white/30 transition-all duration-700"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* --- TESTIMONIALS & NEWS --- */}
       <section className="py-40 px-10 max-w-7xl mx-auto overflow-hidden">
@@ -293,16 +308,6 @@ export default function Home() {
             <h2 className="text-3xl font-black mb-2 tracking-tighter uppercase">KOPI WAE</h2>
             <p className="text-6xl font-black text-[#A67C52] my-10">30% OFF</p>
             <button onClick={() => setShowPopup(false)} className="w-full py-6 rounded-full font-black bg-[#1A1A1B] text-white hover:bg-[#A67C52]">AMBIL DISKON</button>
-          </div>
-        </div>
-      )}
-
-      {/* --- REGISTER MODAL --- */}
-      {showRegister && (
-        <div className="fixed inset-0 z-[200] overflow-y-auto bg-black/60 backdrop-blur-md flex items-center justify-center animate-in fade-in duration-500">
-          <button onClick={() => setShowRegister(false)} className="fixed top-10 left-10 z-[210] h-12 w-12 rounded-full bg-[#A67C52] text-white flex items-center justify-center font-bold shadow-2xl">✕</button>
-          <div className="w-full h-full flex items-center justify-center">
-             <Register isDarkMode={isDarkMode} onNavigate={handleNavigate} />
           </div>
         </div>
       )}
