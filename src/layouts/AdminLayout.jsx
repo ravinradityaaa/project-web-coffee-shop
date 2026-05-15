@@ -37,7 +37,7 @@ export default function AdminLayout({ onLogout }) {
       >
         {/* Header Sidebar */}
         <div className="flex items-center justify-center h-16 border-b border-stone-700">
-          <h2 className="text-2xl font-bold text-amber-500">Coffee Admin</h2>
+          <h2 className="text-2xl font-bold text-amber-500">Admin Wae</h2>
         </div>
 
         {/* Menu Navigasi - Diambil dari struktur folder di image_b1e6f2.jpg */}
