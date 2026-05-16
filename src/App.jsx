@@ -1,59 +1,150 @@
 // src/App.jsx
-import { useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './pages/user/Login';
-import AdminLayout from './layouts/AdminLayout';
-import Dashboard from './pages/admin/Dashboard';
-import UserLayout from './layouts/UserLayout'; 
-import Home from './pages/user/Home'; 
-import ListProduk from './pages/user/ListProduk'; // 1. Pastikan di-import
+
+import { useState } from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+
+import Login from "./pages/user/Login";
+
+/* ADMIN */
+import AdminLayout from "./layouts/AdminLayout";
+import Dashboard from "./pages/admin/Dashboard";
+
+/* USER */
+import UserLayout from "./layouts/UserLayout";
+import Home from "./pages/user/Home";
+import ListProduk from "./pages/user/ListProduk";
+
+/* HALAMAN BARU */
+import Checkout from "./pages/user/Checkout";
+import History from "./pages/user/History";
+import Profil from "./pages/user/Profil";
 
 function App() {
-  const [role, setRole] = useState('user'); // Sementara set ke 'user' untuk testing
+  // sementara user agar gampang testing
+  const [role, setRole] = useState("user");
 
   return (
     <BrowserRouter>
       <Routes>
-        {/* 1. HALAMAN LOGIN */}
-        {role === 'guest' && (
-          <Route path="/" element={<Login onLogin={setRole} />} />
+
+        {/* ================================= */}
+        {/* LOGIN */}
+        {/* ================================= */}
+
+        {role === "guest" && (
+          <Route
+            path="/"
+            element={<Login onLogin={setRole} />}
+          />
         )}
 
-        {/* 2. AREA ADMIN */}
-        {role === 'admin' && (
-          <Route path="/admin" element={<AdminLayout onLogout={() => setRole('guest')} />}>
-            <Route index element={<Dashboard />} />
-            <Route path="produk" element={<div>Halaman Kelola Produk (Admin)</div>} />
+        {/* ================================= */}
+        {/* ADMIN */}
+        {/* ================================= */}
+
+        {role === "admin" && (
+          <Route
+            path="/admin"
+            element={
+              <AdminLayout
+                onLogout={() => setRole("guest")}
+              />
+            }
+          >
+            <Route
+              index
+              element={<Dashboard />}
+            />
+
+            <Route
+              path="produk"
+              element={
+                <div>
+                  Halaman Kelola Produk
+                </div>
+              }
+            />
           </Route>
         )}
 
-        {/* 3. AREA USER: TAMBAHKAN DI SINI */}
-        {role === 'user' && (
-          <>
-            {/* Rute untuk Landing Page */}
-            <Route path="/home" element={
-              <UserLayout onLogout={() => setRole('guest')}>
-                <Home /> 
-              </UserLayout>
-            } />
+        {/* ================================= */}
+        {/* USER */}
+        {/* ================================= */}
 
-            {/* RUTE BARU: Halaman List Produk (Menu) */}
-            <Route path="/menu" element={
-              <UserLayout onLogout={() => setRole('guest')}>
-                <ListProduk /> 
-              </UserLayout>
-            } />
+        {role === "user" && (
+          <>
+            {/* HOME */}
+            <Route
+              path="/home"
+              element={
+                <UserLayout
+                  onLogout={() => setRole("guest")}
+                >
+                  <Home />
+                </UserLayout>
+              }
+            />
+
+            {/* MENU */}
+            <Route
+              path="/menu"
+              element={
+                <UserLayout
+                  onLogout={() => setRole("guest")}
+                >
+                  <ListProduk />
+                </UserLayout>
+              }
+            />
+
+            {/* ================================= */}
+            {/* TEST MANUAL TANPA USERLAYOUT */}
+            {/* ================================= */}
+
+            {/* CHECKOUT */}
+            <Route
+              path="/checkout"
+              element={<Checkout />}
+            />
+
+            {/* HISTORY */}
+            <Route
+              path="/history"
+              element={<History />}
+            />
+
+            {/* PROFIL */}
+            <Route
+              path="/profil"
+              element={<Profil />}
+            />
           </>
         )}
 
-        {/* 4. PROTEKSI REDIRECT */}
-        <Route path="*" element={
-          <Navigate to={
-            role === 'admin' ? "/admin" : 
-            role === 'user' ? "/home" : "/"
-          } replace />
-        } />
-        
+        {/* ================================= */}
+        {/* REDIRECT */}
+        {/* ================================= */}
+
+        <Route
+          path="*"
+          element={
+            <Navigate
+              to={
+                role === "admin"
+                  ? "/admin"
+                  : role === "user"
+                  ? "/home"
+                  : "/"
+              }
+              replace
+            />
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
