@@ -139,7 +139,7 @@ export default function ListProduk({ isDarkMode, onOrder }) {
             <div className="col-span-full py-24 text-center">
               <div className="w-12 h-12 rounded-full border-4 border-[#A67C52]/40 border-t-[#A67C52] animate-spin mx-auto mb-4"></div>
               <p className={`font-black uppercase tracking-widest opacity-40 ${isDarkMode ? 'text-white' : 'text-black'}`}>
-                Menyiapkan varian menu lengkap...
+                Memuat menu Kopi Wae
               </p>
             </div>
           ) : filteredProducts.length > 0 ? (
