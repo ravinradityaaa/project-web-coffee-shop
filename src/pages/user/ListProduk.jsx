@@ -110,7 +110,7 @@ export default function ListProduk({ isDarkMode, onOrder }) {
                     ? 'border-white/10 focus:border-[#A67C52] text-white placeholder:text-white/20' 
                     : 'border-black/10 focus:border-[#A67C52] text-black placeholder:text-black/20'}`}
               />
-              <span className="absolute right-0 top-1/2 -translate-y-1/2 opacity-30">🔍</span>
+              <span className="absolute right-0 top-1/2 -translate-y-1/2 opacity-30"></span>
             </div>
           </div>
 
