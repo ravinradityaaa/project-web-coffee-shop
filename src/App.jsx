@@ -106,15 +106,11 @@ function App() {
             />
 
             {/* REGISTER (Terintegrasi di dalam UserLayout) */}
+            {/* PERBAIKAN: Pisahkan Register dari layout utama agar background hitam atas hilang */}
             <Route
               path="/register"
-              element={
-                <UserLayout onLogout={() => setRole("guest")}>
-                  <div className="py-20 bg-zinc-900 min-h-screen flex items-center justify-center">
-                    <Register isDarkMode={true} onNavigate={(page) => setRole("guest")} />
-                  </div>
-                </UserLayout>
-              }
+              element={<Register onNavigate={(page) => setRole("guest")} />
+            }
             />
 
             {/* ================================= */}
