@@ -1,15 +1,20 @@
 // src/layouts/UserLayout.jsx
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; // Menambahkan Link untuk navigasi
+import { useNavigate, Link } from 'react-router-dom';
 
 const UserLayout = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
 
-  // Fungsi navigasi ke halaman ListProduk
   const handleNavMenu = () => {
-    navigate('/menu'); // Pastikan path ini sesuai dengan di App.jsx
-    setIsMenuOpen(false); // Tutup menu mobile jika terbuka
+    navigate('/menu');
+    setIsMenuOpen(false);
+  };
+
+  // Fungsi navigasi ke halaman Register/Login
+  const handleNavAuth = () => {
+    navigate('/register'); // Sesuaikan path ini dengan path register di App.jsx kamu
+    setIsMenuOpen(false);
   };
 
   return (
@@ -17,7 +22,7 @@ const UserLayout = ({ children }) => {
       {/* Header */}
       <header className="bg-[#1a1a1a] text-white py-4 px-6 md:px-12 flex items-center justify-between border-b border-[#333] sticky top-0 z-[100] backdrop-blur-md bg-opacity-95">
         
-        {/* Logo - Klik ke Home */}
+        {/* Logo */}
         <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
           <div className="text-amber-700 text-2xl md:text-3xl">☕</div>
           <div>
@@ -28,20 +33,22 @@ const UserLayout = ({ children }) => {
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center gap-8 text-[11px] font-bold tracking-widest uppercase">
-          {/* Menggunakan Link untuk navigasi ke Beranda (/) */}
           <Link to="/" className="hover:text-amber-600 transition">Beranda</Link>
           
-          {/* Tombol Menu Desktop */}
-          <button 
-            onClick={handleNavMenu} 
-            className="hover:text-amber-600 transition tracking-widest font-bold uppercase"
-          >
+          <button onClick={handleNavMenu} className="hover:text-amber-600 transition tracking-widest font-bold uppercase">
             Menu
           </button>
           
           <a href="#" className="hover:text-amber-600 transition">Shop Online</a>
           <a href="#" className="hover:text-amber-600 transition">Locations</a>
-          <a href="#" className="hover:text-amber-600 transition">Daftar/Masuk</a>
+          
+          {/* Mengubah tag <a> menjadi <button> untuk memicu fungsi navigasi */}
+          <button 
+            onClick={handleNavAuth} 
+            className="hover:text-amber-600 transition tracking-widest font-bold uppercase"
+          >
+            Daftar/Masuk
+          </button>
         </nav>
 
         {/* Action Buttons */}
@@ -67,17 +74,19 @@ const UserLayout = ({ children }) => {
       {/* Mobile Sidebar Menu */}
       <div className={`lg:hidden fixed inset-0 z-[90] bg-[#1a1a1a] transition-transform duration-500 ease-in-out ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <nav className="flex flex-col items-center justify-center h-full gap-8 text-xl font-black uppercase tracking-widest text-center">
-          {/* Navigasi Beranda Mobile */}
           <Link to="/" onClick={() => setIsMenuOpen(false)}>Beranda</Link>
           
-          {/* Tombol Menu Mobile */}
           <button onClick={handleNavMenu} className="text-amber-600 hover:text-white transition uppercase font-black">
             Menu
           </button>
           
           <a href="#" onClick={() => setIsMenuOpen(false)}>Shop Online</a>
           <a href="#" onClick={() => setIsMenuOpen(false)}>Locations</a>
-          <a href="#" onClick={() => setIsMenuOpen(false)}>Daftar/Masuk</a>
+          
+          {/* Tombol Daftar/Masuk Mobile */}
+          <button onClick={handleNavAuth} className="hover:text-amber-600 transition uppercase font-black">
+            Daftar/Masuk
+          </button>
           
           <button onClick={handleNavMenu} className="mt-4 bg-[#a87a55] px-10 py-4 rounded-full text-sm font-black uppercase tracking-[0.2em]">
             Order Now
@@ -89,10 +98,6 @@ const UserLayout = ({ children }) => {
       <main className={`flex-grow transition-all duration-500 ${isMenuOpen ? 'blur-sm scale-95' : ''}`}>
         {children}
       </main>
-
-      <footer className="bg-[#111] text-gray-500 py-8 text-center text-[10px] tracking-widest uppercase border-t border-[#222]">
-        © 2026 Kopi Wae Indonesia — Crafted with Passion
-      </footer>
     </div>
   );
 };

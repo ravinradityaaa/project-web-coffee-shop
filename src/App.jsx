@@ -24,6 +24,9 @@ import Checkout from "./pages/user/Checkout";
 import History from "./pages/user/History";
 import Profil from "./pages/user/Profil";
 
+/* TAMBAHAN KOMPONEN REGISTER */
+import Register from "./pages/user/Register"; 
+
 function App() {
   // sementara user agar gampang testing
   const [role, setRole] = useState("user");
@@ -98,6 +101,18 @@ function App() {
                   onLogout={() => setRole("guest")}
                 >
                   <ListProduk />
+                </UserLayout>
+              }
+            />
+
+            {/* REGISTER (Terintegrasi di dalam UserLayout) */}
+            <Route
+              path="/register"
+              element={
+                <UserLayout onLogout={() => setRole("guest")}>
+                  <div className="py-20 bg-zinc-900 min-h-screen flex items-center justify-center">
+                    <Register isDarkMode={true} onNavigate={(page) => setRole("guest")} />
+                  </div>
                 </UserLayout>
               }
             />
