@@ -5,18 +5,13 @@ import axios from "axios";
 const DetailProduk = () => {
   const [jumlah, setJumlah] = useState(1);
   const [gambarAktif, setGambarAktif] = useState(0);
-  const [produkTerkait, setProdukTerkait] = useState([]);
+  const [produkList, setProdukList] = useState([]);
+  const [produkAktif, setProdukAktif] = useState(null);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [loadingDetail, setLoadingDetail] = useState(false);
   const [error, setError] = useState("");
-
-  const gambarProduk = [
-    "/src/assets/arb.jpg",
-    "/src/assets/arb1.jpg",
-    "/src/assets/arb2.jpg",
-    "/src/assets/arb3.jpg",
-  ];
-
+  const [searchProduk, setSearchProduk] = useState("");
 
   const formatRupiah = (angka) => {
     return angka.toLocaleString("id-ID");
@@ -29,7 +24,11 @@ const DetailProduk = () => {
   };
 
   const tambahJumlah = () => {
+    if (jumlah < produkAktif.stok) {
     setJumlah(jumlah + 1);
+  } else {
+    alert("Jumlah tidak boleh melebihi stok.");
+  }
   };
 
 useEffect(() => {
@@ -38,12 +37,27 @@ useEffect(() => {
       setLoading(true);
 
       const response = await axios.get("/coffee-products.json");
+      const dataProduk = response.data;
+
+      const stokTersimpan = JSON.parse(localStorage.getItem("stokProduk") || "{}");
+
+      const dataProdukDenganStok = dataProduk.map((produk) => ({
+        ...produk,
+        stok: stokTersimpan[produk.id] ?? produk.stok,
+      }));
 
       setTimeout(() => {
-        setProdukTerkait(response.data);
+        setProdukList(dataProdukDenganStok);
+
+        const produkArabica =
+          dataProduk.find((item) => item.nama === "Kopi Arabica Premium") ||
+          dataProduk[0];
+
+        setProdukAktif(produkArabica);
+
         setError("");
         setLoading(false);
-      }, 1000);
+      }, 800);
     } catch (err) {
       console.log("Error ambil produk:", err);
       setError("Gagal mengambil data produk kopi.");
@@ -52,45 +66,191 @@ useEffect(() => {
   };
 
   ambilProdukTerkait();
-}, []);
 
-  const tambahKeKeranjang = () => {
-    const produkBaru = {
-      id: 1,
-      nama: "Kopi Arabica Premium",
-      kategori: "Coffee Beans",
-      harga: 85000,
-      gambar: "ARABICA",
-      jumlah: jumlah,
-    };
+   const ambilSearchProduk = () => {
+    const keyword = localStorage.getItem("searchProduk") || "";
+    setSearchProduk(keyword);
+  };
 
-    const keranjangLama = JSON.parse(localStorage.getItem("keranjang")) || [];
+  ambilSearchProduk();
 
-    const produkSudahAda = keranjangLama.find(
-      (item) => item.id === produkBaru.id
+  window.addEventListener("searchProdukChanged", ambilSearchProduk);
+
+  return () => {
+    window.removeEventListener("searchProdukChanged", ambilSearchProduk);
+  };
+
+  setProdukList(dataProdukDenganStok);
+
+  const produkArabica =
+    dataProdukDenganStok.find((item) => item.nama === "Kopi Arabica Premium") ||
+    dataProdukDenganStok[0];
+
+  setProdukAktif(produkArabica);
+   const updateStokProduk = () => {
+    const stokTersimpan = JSON.parse(localStorage.getItem("stokProduk") || "{}");
+
+    setProdukList((produkSebelumnya) =>
+      produkSebelumnya.map((produk) => {
+        return {
+          ...produk,
+          stok: stokTersimpan[produk.id] ?? produk.stok,
+        };
+      })
     );
 
-    let keranjangBaru;
+    setProdukAktif((produkSebelumnya) => {
+      if (!produkSebelumnya) {
+        return produkSebelumnya;
+      }
 
-    if (produkSudahAda) {
-      keranjangBaru = keranjangLama.map((item) =>
-        item.id === produkBaru.id
-          ? { ...item, jumlah: item.jumlah + jumlah }
-          : item
-      );
-    } else {
-      keranjangBaru = [...keranjangLama, produkBaru];
-    }
-
-    localStorage.setItem("keranjang", JSON.stringify(keranjangBaru));
-
-    alert("Produk berhasil ditambahkan ke keranjang!");
-    navigate("/keranjang");
+      return {
+        ...produkSebelumnya,
+        stok: stokTersimpan[produkSebelumnya.id] ?? produkSebelumnya.stok,
+      };
+    });
   };
+
+  window.addEventListener("stokProdukChanged", updateStokProduk);
+
+  return () => {
+    window.removeEventListener("stokProdukChanged", updateStokProduk);
+  };
+}, []);
+
+
+  const tambahKeKeranjang = () => {    if (produkAktif.stok <= 0) {
+    alert("Stok produk habis.");
+    return;
+  }
+
+  if (jumlah > produkAktif.stok) {
+    alert("Jumlah melebihi stok yang tersedia.");
+    return;
+  }
+
+  const produkBaru = {
+    id: produkAktif.id,
+    nama: produkAktif.nama,
+    kategori: produkAktif.kategori,
+    harga: produkAktif.harga,
+    gambar: produkAktif.gambar,
+    foto: produkAktif.foto,
+    stok: produkAktif.stok,
+    jumlah: jumlah,
+  };
+
+  const keranjangLama = JSON.parse(localStorage.getItem("keranjang")) || [];
+
+  const produkSudahAda = keranjangLama.find(
+    (item) => item.id === produkBaru.id
+  );
+
+  let keranjangBaru;
+
+  if (produkSudahAda) {
+    keranjangBaru = keranjangLama.map((item) => {
+      if (item.id === produkBaru.id) {
+        const jumlahBaru = item.jumlah + jumlah;
+
+        if (jumlahBaru > produkAktif.stok) {
+          alert("Jumlah di keranjang melebihi stok.");
+          return item;
+        }
+
+        return {
+          ...item,
+          jumlah: jumlahBaru,
+          stok: produkAktif.stok,
+          foto: produkAktif.foto,
+        };
+      }
+
+      return item;
+    });
+  } else {
+    keranjangBaru = [...keranjangLama, produkBaru];
+  }
+
+  localStorage.setItem("keranjang", JSON.stringify(keranjangBaru));
+  window.dispatchEvent(new Event("keranjangChanged"));
+
+  alert(`${produkAktif.nama} berhasil ditambahkan ke keranjang!`);
+  navigate("/keranjang");
+};
+
+ if (loading || !produkAktif) {
+  return (
+    <main className="min-h-screen bg-white flex items-center justify-center">
+      <p>Memuat produk...</p>
+    </main>
+  );
+}
+
+if (loadingDetail) {
+  return (
+    <main className="min-h-screen bg-[#F8F3EF] flex items-center justify-center">
+      <div className="bg-white border border-[#E7DAD0] rounded-2xl shadow-xl px-10 py-8 text-center">
+        <div className="mx-auto mb-4 w-12 h-12 border-4 border-[#D8C9BF] border-t-[#8B5A36] rounded-full animate-spin"></div>
+        <h2 className="text-xl font-bold text-[#2B1A12]">
+          Memuat Detail Produk
+        </h2>
+        <p className="text-gray-500 mt-2">
+          Sedang menampilkan informasi produk pilihan...
+        </p>
+      </div>
+    </main>
+  );
+}
+
+if (error) {
+  return (
+    <main className="min-h-screen bg-white flex items-center justify-center">
+      <div className="text-center text-red-600 font-semibold">{error}</div>
+    </main>
+  );
+}
+
+const pilihProdukTerkait = (produk) => {
+  setLoadingDetail(true);
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+
+  setTimeout(() => {
+    setProdukAktif(produk);
+    setJumlah(1);
+    setGambarAktif(0);
+    setLoadingDetail(false);
+  }, 1000);
+};
+ 
+const produkTerkaitFilter = produkList
+  .filter((item) => item.id !== produkAktif.id)
+  .filter((item) => {
+    const keyword = searchProduk.toLowerCase();
+
+    return (
+      item.nama.toLowerCase().includes(keyword) ||
+      item.kategori.toLowerCase().includes(keyword)
+    );
+  });
+
+  const beliSekarang = () => {
+  const totalHarga = produkAktif.harga * jumlah;
+
+  alert(
+    `Checkout berhasil!\n\nProduk: ${produkAktif.nama}\nJumlah: ${jumlah}\nTotal: Rp ${formatRupiah(totalHarga)}\n\nPesanan kamu sedang diproses.`
+  );
+
+  setJumlah(1);
+};
 
   return (
     <main className="min-h-screen bg-white text-[#1F1A17]">
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-6">
         {/* Breadcrumb */}
         <div className="flex items-center gap-3 text-sm text-gray-500 mb-5">
           <span>Home</span>
@@ -98,110 +258,85 @@ useEffect(() => {
           <span>Shop</span>
           <span>›</span>
           <span className="text-[#1F1A17] font-semibold">
-            Kopi Arabica Premium
+            {produkAktif.nama}
           </span>
         </div>
+ 
+    
 
         {/* Detail Produk Utama */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Gambar Produk */}
-          <div>
-            <div className="relative h-[430px] rounded-xl overflow-hidden bg-[#1E120D]">
+          
+            <div className="relative h-64 md:h-80 lg:h-[430px] rounded-xl overflow-hidden bg-[#1E120D]">
               <span className="absolute top-4 left-4 z-10 bg-[#A96B3C] text-white text-sm px-4 py-2 rounded-full">
                 -10%
               </span>
+              
 
-              <img
-                src={gambarProduk[gambarAktif]}
-                alt="Kopi Arabica Premium"
-                className="w-full h-full object-cover"
-              />
-
-              <button
-                onClick={() =>
-                  setGambarAktif(
-                    gambarAktif === 0 ? gambarProduk.length - 1 : gambarAktif - 1
-                  )
-                }
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white shadow flex items-center justify-center text-2xl"
-              >
-                ‹
-              </button>
-
-              <button
-                onClick={() =>
-                  setGambarAktif(
-                    gambarAktif === gambarProduk.length - 1 ? 0 : gambarAktif + 1
-                  )
-                }
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white shadow flex items-center justify-center text-2xl"
-              >
-                ›
-              </button>
+           <img
+              src={produkAktif.foto}
+              alt={produkAktif.nama}
+              className="w-full h-full object-cover"
+               onError={(e) => {
+                  e.currentTarget.src = "/vite.svg";
+            }}    
+            />
             </div>
-
-            {/* Thumbnail */}
-            <div className="grid grid-cols-4 gap-3 mt-3">
-              {gambarProduk.map((gambar, index) => (
-                <button
-                  key={index}
-                  onClick={() => setGambarAktif(index)}
-                  className={`h-20 rounded-lg overflow-hidden border-2 ${
-                    gambarAktif === index
-                      ? "border-[#8B5A36]"
-                      : "border-transparent"
-                  }`}
-                >
-                  <img
-                    src={gambar}
-                    alt={`Thumbnail ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              ))}
-            </div>
-          </div>
 
           {/* Info Produk */}
+          
           <div className="pt-1">
             <span className="inline-block bg-[#F3E7DD] text-[#8B5A36] text-xs font-semibold px-4 py-2 rounded-full mb-5">
               BEST SELLER
             </span>
 
-            <h1 className="text-4xl font-bold mb-4">Kopi Arabica Premium</h1>
-
+              <h1 className="text-4xl font-bold mb-4">
+                {produkAktif.nama}
+              </h1>
+              
             <div className="flex flex-wrap items-center gap-2 text-sm mb-5">
               <span className="text-yellow-500 text-lg">★★★★★</span>
-              <span>4.9</span>
-              <span>(120 Review)</span>
+              <span>{produkAktif.rating}</span>
+              <span>({produkAktif.review} Review)</span>
               <span className="text-gray-300">|</span>
-              <span>Terjual 250+</span>
+              <span>Terjual {produkAktif.terjual}</span>
             </div>
 
+            
+
             <div className="flex items-center gap-4 mb-4">
-              <h2 className="text-3xl font-bold">Rp 85.000</h2>
-              <span className="text-gray-400 line-through">Rp 95.000</span>
+             <h2 className="text-3xl font-bold">
+                Rp {formatRupiah(produkAktif.harga)}
+              </h2>
+
+              <span className="text-gray-400 line-through">
+                Rp {formatRupiah(produkAktif.hargaLama)}
+              </span>
             </div>
 
             <p className="text-gray-600 leading-relaxed max-w-xl mb-6">
-              Kopi arabica premium dengan aroma floral, rasa seimbang, dan
-              kualitas biji pilihan yang cocok untuk manual brew maupun
-              espresso.
-            </p>
+                {produkAktif.deskripsiSingkat}
+              </p>
 
             <hr className="mb-5" />
 
             <div className="space-y-2 text-sm mb-6">
               <p>
-                <span className="inline-block w-24 font-semibold">Category</span>
-                : Coffee Beans
-              </p>
-              <p>
-                <span className="inline-block w-24 font-semibold">Stock</span>:
-                <span className="text-green-700 font-semibold ml-1">
-                  In Stock
-                </span>
-              </p>
+                  <span className="inline-block w-24 font-semibold">Category</span>
+                  : {produkAktif.kategori}
+                </p>
+
+                <p>
+                  <span className="inline-block w-24 font-semibold">Stock</span>:
+                  <span
+                    className={`font-semibold ml-1 ${
+                      produkAktif.stok > 0 ? "text-green-700" : "text-red-600"
+                    }`}
+                  >
+                    {produkAktif.stok > 0 ? `${produkAktif.stok} tersedia` : "Stok habis"}
+                  </span>
+                </p>
             </div>
 
             <div className="flex items-center gap-6 mb-6">
@@ -225,14 +360,18 @@ useEffect(() => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-xl mb-6">
+              
               <button
                   onClick={tambahKeKeranjang}
                   className="bg-[#1E120D] text-white py-4 rounded-lg font-semibold hover:bg-[#3A241A] transition"
                 >
                   🛒 Tambah Keranjang
                 </button>
+                
 
-              <button className="bg-[#C98756] text-white py-4 rounded-lg font-semibold hover:bg-[#B87545] transition">
+              <button 
+              onClick={beliSekarang}
+              className="bg-[#C98756] text-white py-4 rounded-lg font-semibold hover:bg-[#B87545] transition">
                 Beli Sekarang
               </button>
             </div>
@@ -283,19 +422,16 @@ useEffect(() => {
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-5">
           <div className="border rounded-xl p-6">
             <h2 className="text-xl font-bold mb-2">Deskripsi Produk</h2>
-            <p className="text-gray-600 mb-4">
-              Biji kopi arabica pilihan dari dataran tinggi dengan ketinggian
-              1200-1600 mdpl. Diproses secara higienis untuk menghasilkan cita
-              rasa terbaik di setiap seduhan.
-            </p>
 
-            <ul className="space-y-2 text-gray-700">
-              <li>✔ 100% Arabica Premium</li>
-              <li>✔ Aroma floral yang khas</li>
-              <li>✔ Rasa seimbang dan lembut</li>
-              <li>✔ Cocok untuk manual brew & espresso</li>
-              <li>✔ Diproses secara higienis</li>
-            </ul>
+              <p className="text-gray-600 mb-4">
+                {produkAktif.deskripsiLengkap}
+              </p>
+
+              <ul className="space-y-2 text-gray-700">
+                {produkAktif.keunggulan.map((item, index) => (
+                  <li key={index}>✓ {item}</li>
+                ))}
+              </ul>
           </div>
 
           <div className="border rounded-xl p-6">
@@ -351,6 +487,7 @@ useEffect(() => {
             <span className="text-sm text-gray-500">Data kopi dari JSON</span>
           </div>
 
+           
             {loading && (
               <div className="p-8 text-center bg-[#F8F3EF] rounded-xl">
                 <div className="mx-auto mb-3 w-10 h-10 border-4 border-[#D8C9BF] border-t-[#8B5A36] rounded-full animate-spin"></div>
@@ -368,36 +505,93 @@ useEffect(() => {
           )}
 
           {!loading && !error && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {produkTerkait.slice(0, 6).map((item) => (
-                <div
-                  key={item.id}
-                  className="border rounded-xl overflow-hidden grid grid-cols-[150px_1fr] bg-white hover:shadow-md transition"
-                >
-                  <div className="h-32 bg-[#3A241A] flex items-center justify-center text-white font-bold text-sm text-center px-3">
-                    {item.gambar}
-                  </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {produkTerkaitFilter.length === 0 ? (
+                    <div className="col-span-full p-8 text-center bg-[#F8F3EF] rounded-xl">
+                      <p className="font-semibold text-[#8B5A36]">
+                        Produk tidak ditemukan.
+                      </p>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Coba gunakan kata kunci lain.
+                      </p>
+                    </div>
+                  ) : (
+                    produkTerkaitFilter.slice(0, 10).map((item) => (
+                    <div
+                      key={item.id}
+                      className="border rounded-xl overflow-hidden grid grid-cols-[150px_1fr] bg-white hover:shadow-md transition"
+                    >
+                      <div className="h-32 bg-[#F8F3EF] overflow-hidden">
+                        <img
+                          src={item.foto}
+                          alt={item.nama}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src = "/vite.svg";
+                          }}
+                        />
+                      </div>
 
-                  <div className="p-4">
-                    <h3 className="font-bold">{item.nama}</h3>
+                      <div className="p-4">
+                        <h3 className="font-bold">{item.nama}</h3>
 
-                    <p className="text-xs text-gray-500 mt-1">{item.kategori}</p>
+                        <p className="text-xs text-gray-500 mt-1">{item.kategori}</p>
 
-                    <p className="text-yellow-500 text-sm mt-2">
-                      ★★★★★{" "}
-                      <span className="text-gray-500">({item.review})</span>
-                    </p>
+                        <p className="text-yellow-500 text-sm mt-2">
+                          ★★★★★ <span className="text-gray-500">({item.review})</span>
+                        </p>
 
-                    <p className="font-bold mt-2">
-                      Rp {item.harga.toLocaleString("id-ID")}
-                    </p>
+                        <p className="font-bold mt-2">
+                          Rp {formatRupiah(item.harga)}
+                        </p>
 
-                    <button className="mt-3 border border-[#C98756] text-[#8B5A36] px-4 py-2 rounded-lg text-sm hover:bg-[#F8F3EF]">
-                      + Keranjang
-                    </button>
-                  </div>
-                </div>
-              ))}
+                        <div className="flex gap-2 mt-3">
+                          <button
+                            onClick={() => pilihProdukTerkait(item)}
+                            className="border border-[#C98756] text-[#8B5A36] px-4 py-2 rounded-lg text-sm hover:bg-[#F8F3EF]"
+                          >
+                            Detail
+                          </button>
+
+                          <button
+                            onClick={() => {
+                              const keranjangLama =
+                                JSON.parse(localStorage.getItem("keranjang")) || [];
+
+                              const produkBaru = {
+                                id: item.id,
+                                nama: item.nama,
+                                kategori: item.kategori,
+                                harga: item.harga,
+                                foto: item.foto,
+                                jumlah: 1,
+                              };
+
+                              const produkSudahAda = keranjangLama.find(
+                                (produk) => produk.id === produkBaru.id
+                              );
+
+                              const keranjangBaru = produkSudahAda
+                                ? keranjangLama.map((produk) =>
+                                    produk.id === produkBaru.id
+                                      ? { ...produk, jumlah: produk.jumlah + 1 }
+                                      : produk
+                                  )
+                                : [...keranjangLama, produkBaru];
+
+                              localStorage.setItem("keranjang", JSON.stringify(keranjangBaru));
+                              window.dispatchEvent(new Event("keranjangChanged"));
+
+                              alert(`${item.nama} berhasil ditambahkan ke keranjang!`);
+                            }}
+                            className="bg-[#1E120D] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#3A241A]"
+                          >
+                            + Keranjang
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )))}
             </div>
           )}
         </section>

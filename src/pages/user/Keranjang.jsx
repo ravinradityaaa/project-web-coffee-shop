@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Keranjang = () => {
+  const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -43,12 +45,25 @@ const Keranjang = () => {
   }, []);
 
   const tambahJumlah = (id) => {
-  const updateItems = items.map((item) =>
-    item.id === id ? { ...item, jumlah: item.jumlah + 1 } : item
-  );
+  const updateItems = items.map((item) => {
+   if (item.id === id) {
+      if (item.jumlah >= item.stok) {
+        alert("Jumlah tidak boleh melebihi stok.");
+        return item;
+      }
+
+      return {
+        ...item,
+        jumlah: item.jumlah + 1,
+      };
+    }
+
+    return item;
+  });
 
   setItems(updateItems);
   localStorage.setItem("keranjang", JSON.stringify(updateItems));
+  window.dispatchEvent(new Event("keranjangChanged"));
 };
 
   const kurangJumlah = (id) => {
@@ -60,18 +75,25 @@ const Keranjang = () => {
 
     setItems(updateItems);
     localStorage.setItem("keranjang", JSON.stringify(updateItems));
-    };
+    window.dispatchEvent(new Event("keranjangChanged"));
+  };
 
   const hapusItem = (id) => {
   const updateItems = items.filter((item) => item.id !== id);
 
   setItems(updateItems);
-  localStorage.setItem("keranjang", JSON.stringify(updateItems));
+  if (updateItems.length === 0) {
+    localStorage.removeItem("keranjang");
+  } else {
+    localStorage.setItem("keranjang", JSON.stringify(updateItems));
+  }
+  window.dispatchEvent(new Event("keranjangChanged"));
 };
 
   const kosongkanKeranjang = () => {
     setItems([]);
     localStorage.removeItem("keranjang");
+    window.dispatchEvent(new Event("keranjangChanged"));
   };
 
   const totalItem = items.reduce((total, item) => {
@@ -84,6 +106,30 @@ const Keranjang = () => {
 
   const total = subtotal + ongkir;
 
+  const checkout = () => {
+  if (items.length === 0) {
+    alert("Keranjang masih kosong.");
+    return;
+  }
+  const stokTersimpan = JSON.parse(localStorage.getItem("stokProduk") || "{}");
+  const stokBaru = { ...stokTersimpan };
+  items.forEach((item) => {
+    const stokSaatIni = stokBaru[item.id] ?? item.stok;
+    const stokSetelahCheckout = stokSaatIni - item.jumlah;
+    stokBaru[item.id] = Math.max(stokSetelahCheckout, 0);
+  });
+
+  localStorage.setItem("stokProduk", JSON.stringify(stokBaru));
+
+  alert("Checkout berhasil! Pesanan kamu sedang diproses.");
+
+  setItems([]);
+  localStorage.removeItem("keranjang");
+  window.dispatchEvent(new Event("keranjangChanged"));
+  window.dispatchEvent(new Event("stokProdukChanged"));
+};
+
+  
   return (
     <main className="min-h-screen bg-[#F8F3EF] px-6 py-10">
       <div className="max-w-7xl mx-auto">
@@ -159,8 +205,15 @@ const Keranjang = () => {
                       className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-0 items-center px-5 py-5 border-t border-[#E7DAD0]"
                     >
                       <div className="md:col-span-5 flex items-center gap-4">
-                        <div className="w-24 h-24 bg-[#3A241A] rounded-xl flex items-center justify-center text-white font-bold text-sm text-center px-2">
-                          {item.gambar}
+                        <div className="w-24 h-24 rounded-xl overflow-hidden bg-[#F8F3EF]">
+                          <img
+                            src={item.foto}
+                            alt={item.nama}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                                e.currentTarget.src = "/vite.svg";
+                              }}
+                          />
                         </div>
 
                         <div>
@@ -169,6 +222,9 @@ const Keranjang = () => {
                           </h2>
                           <p className="text-sm text-gray-500">
                             {item.kategori}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            Stok tersedia: {item.stok}
                           </p>
                         </div>
                       </div>
@@ -263,6 +319,7 @@ const Keranjang = () => {
               </div>
 
               <button
+              onClick={checkout}
                 disabled={items.length === 0}
                 className={`w-full mt-6 py-3 rounded-xl font-semibold transition ${
                   items.length === 0
@@ -273,7 +330,9 @@ const Keranjang = () => {
                 Checkout
               </button>
 
-              <button className="w-full mt-3 border border-[#C98756] text-[#8B5A36] py-3 rounded-xl font-semibold hover:bg-[#F8F3EF]">
+              <button 
+              onClick={() => navigate("/detailproduk")}
+              className="w-full mt-3 border border-[#C98756] text-[#8B5A36] py-3 rounded-xl font-semibold hover:bg-[#F8F3EF]">
                 Lanjut Belanja
               </button>
             </aside>

@@ -52,12 +52,10 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     setPesan({
       tipe: "",
       teks: "",
     });
-
     if (!formLogin.email || !formLogin.password) {
       setPesan({
         tipe: "error",
@@ -65,16 +63,13 @@ const Login = () => {
       });
       return;
     }
-
     setLoadingLogin(true);
-
     setTimeout(() => {
       const userDitemukan = users.find(
         (user) =>
           user.email === formLogin.email &&
           user.password === formLogin.password
       );
-
       if (userDitemukan) {
         const dataLogin = {
           id: userDitemukan.id,
@@ -83,16 +78,13 @@ const Login = () => {
           role: userDitemukan.role,
           loginAt: new Date().toLocaleString("id-ID"),
         };
-
         localStorage.setItem("userLogin", JSON.stringify(dataLogin));
-
         window.dispatchEvent(new Event("userLoginChanged"));
-        
+        window.dispatchEvent(new Event("keranjangChanged"));
         setPesan({
           tipe: "success",
           teks: `Login berhasil. Selamat datang, ${userDitemukan.nama}!`,
         });
-
         setFormLogin({
           email: "",
           password: "",
@@ -104,7 +96,6 @@ const Login = () => {
           teks: "Email atau password salah.",
         });
       }
-
       setLoadingLogin(false);
     }, 800);
   };
@@ -271,13 +262,6 @@ const Login = () => {
             Masuk dengan Google
           </button>
 
-          <div className="mt-7 bg-[#F8F3EF] rounded-xl p-4 text-sm text-gray-600">
-            <p className="font-semibold text-[#2B1A12] mb-1">
-              Akun demo untuk testing:
-            </p>
-            <p>Email: azis@gmail.com</p>
-            <p>Password: 123456</p>
-          </div>
 
           <p className="text-center text-sm text-gray-500 mt-7">
             Belum punya akun?{" "}
