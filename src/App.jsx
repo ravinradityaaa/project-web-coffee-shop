@@ -1,10 +1,11 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 // 1. Import Layout Utama
-import AdminLayout from './layouts/AdminLayout'; // Pastikan path-nya sesuai folder kamu
+import AdminLayout from './layouts/AdminLayout';
+import UserLayout from './layouts/UserLayout'; 
 
-// 2. Import Semua Halaman Admin (Sesuai gambar yang kamu kirim)
+// 2. Import Semua Halaman Admin
 import Dashboard from './pages/admin/Dashboard';
 import ManajemenKategori from './pages/admin/ManajemenKategori';
 import ManajemenProduk from './pages/admin/ManajemenProduk';
@@ -12,36 +13,63 @@ import ManajemenPesanan from './pages/admin/ManajemenPesanan';
 import ManajemenPengguna from './pages/admin/ManajemenPengguna';
 import LaporanPenjualan from './pages/admin/LaporanPenjualan';
 
+// 3. Import Semua Halaman User (Kode Agung)
+import Login from './pages/user/Login';
+import Home from './pages/user/Home';
+import ListProduk from './pages/user/ListProduk';
+import Checkout from './pages/user/Checkout';
+import History from './pages/user/History';
+import Profil from './pages/user/Profil';
+
 function App() {
-  // Fungsi dummy untuk props onLogout di AdminLayout
-  const handleLogout = () => {
-    console.log("Logout diklik!");
-    // Nanti di sini kamu tambahkan logika hapus token/session
-  };
+  // State untuk menyimpan status login dummy ('guest', 'admin', 'user')
+  const [role, setRole] = useState('guest');
 
   return (
     <Router>
       <Routes>
-        {/* RUTE BERSARANG (NESTED ROUTES) UNTUK ADMIN
-          Semua rute di dalam block ini akan menggunakan AdminLayout.
-          Komponen halamannya akan otomatis dirender di area <Outlet />
-        */}
-        <Route path="/admin" element={<AdminLayout onLogout={handleLogout} />}>
-          
-          {/* Rute Default saat akses /admin (index) -> Muncul Dashboard */}
-          <Route index element={<Dashboard />} />
-          
-          {/* Rute untuk halaman lainnya */}
-          <Route path="kategori" element={<ManajemenKategori />} />
-          <Route path="produk" element={<ManajemenProduk />} />
-          <Route path="pesanan" element={<ManajemenPesanan />} />
-          <Route path="pengguna" element={<ManajemenPengguna />} />
-          <Route path="laporan" element={<LaporanPenjualan />} />
-          
-        </Route>
+        
+        {/* === AREA GUEST (BELUM LOGIN) === */}
+        {role === 'guest' && (
+          <Route path="/" element={<Login onLogin={setRole} />} />
+        )}
 
-        {/* Nanti kamu bisa tambah rute lain di luar admin di sini, misal untuk pembeli */}
-        {/* <Route path="/" element={<HalamanDepan />} /> */}
+        {/* === AREA ADMIN === */}
+        {role === 'admin' && (
+          <Route path="/admin" element={<AdminLayout onLogout={() => setRole('guest')} />}>
+            <Route index element={<Dashboard />} />
+            <Route path="kategori" element={<ManajemenKategori />} />
+            <Route path="produk" element={<ManajemenProduk />} />
+            <Route path="pesanan" element={<ManajemenPesanan />} />
+            <Route path="pengguna" element={<ManajemenPengguna />} />
+            <Route path="laporan" element={<LaporanPenjualan />} />
+          </Route>
+        )}
+
+        {/* === AREA USER (PELANGGAN) === */}
+        {role === 'user' && (
+          <Route path="/home" element={<UserLayout onLogout={() => setRole('guest')} />}>
+            <Route index element={<Home />} />
+            <Route path="produk" element={<ListProduk />} />
+            <Route path="checkout" element={<Checkout />} />
+            <Route path="history" element={<History />} />
+            <Route path="profil" element={<Profil />} />
+          </Route>
+        )}
+
+        {/* === PROTEKSI REDIRECT === */}
+        {/* Mengembalikan user ke tempat yang benar jika memaksa ketik URL ngawur */}
+        <Route 
+          path="*" 
+          element={
+            <Navigate to={
+              role === 'admin' ? "/admin" : 
+              role === 'user' ? "/home" : 
+              "/"
+            } replace />
+          } 
+        />
+        
       </Routes>
     </Router>
   );
