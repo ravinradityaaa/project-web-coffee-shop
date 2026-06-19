@@ -6,10 +6,14 @@ const Login = ({ setRole }) => {
   const [password, setPassword] = useState('');
 
   const handleLoginProcess = () => {
-    if (email === 'admin' && password === '123') {
-      // 2. Ubah pemanggilan fungsinya
+    // Bersihkan inputan dari spasi "gaib" dan paksa jadi huruf kecil
+    const emailBersih = email.trim().toLowerCase();
+    const passwordBersih = password.trim();
+
+    // Gunakan variabel yang sudah bersih untuk pengecekan
+    if (emailBersih === 'admin' && passwordBersih === '123') {
       setRole('admin'); 
-    } else if (email !== '' && password !== '') {
+    } else if (emailBersih !== '' && passwordBersih !== '') {
       setRole('user');
     } else {
       alert('Tolong isi email dan password terlebih dahulu!');

@@ -31,7 +31,7 @@ function App() {
         
         {/* === AREA GUEST (BELUM LOGIN) === */}
         {role === 'guest' && (
-          <Route path="/" element={<Login onLogin={setRole} />} />
+          <Route path="/" element={<Login setRole={setRole} />} />
         )}
 
         {/* === AREA ADMIN === */}
