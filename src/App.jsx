@@ -28,9 +28,9 @@ function App() {
         ) : (
         /* AREA USER */
         <Route path="/home" element={
-          <UserLayout>
+              <UserLayout>
             {/* Mengganti inline style dengan class Tailwind */}
-            <div className="p-8 bg-stone-100 min-h-screen flex flex-col items-center justify-center">
+                <div className="p-8 bg-stone-100 min-h-screen flex flex-col items-center justify-center">
               
               {/* Styling untuk Heading */}
               <h1 className="text-3xl font-bold text-amber-900 mb-6 shadow-sm">
@@ -42,11 +42,11 @@ function App() {
                 onClick={() => setRole('guest')}
                 className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300"
               >
-                Logout
-              </button>
+                    Logout
+                  </button>
               
-            </div>
-          </UserLayout>
+                </div>
+              </UserLayout>
         } />
         )}
 
