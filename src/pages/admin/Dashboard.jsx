@@ -50,7 +50,7 @@ const AdminLayout = ({ onLogout }) => {
         <div className="p-8 flex-1 overflow-y-auto">
           {/* <Outlet /> ini sangat PENTING! Ini adalah tempat di mana Dashboard, ManajemenProduk, dll akan dirender */}
           <Outlet />
-        </div>
+      </div>
         
       </main>
 
