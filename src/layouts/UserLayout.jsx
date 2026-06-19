@@ -1,103 +1,114 @@
-// src/layouts/UserLayout.jsx
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, Outlet } from 'react-router-dom';
 
-const UserLayout = ({ children }) => {
+// Menerima prop onLogout dari App.jsx
+const UserLayout = ({ onLogout }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
 
-  const handleNavMenu = () => {
-    navigate('/menu');
-    setIsMenuOpen(false);
-  };
-
-  // Fungsi navigasi ke halaman Register/Login
-  const handleNavAuth = () => {
-    navigate('/register'); // Sesuaikan path ini dengan path register di App.jsx kamu
-    setIsMenuOpen(false);
-  };
-
   return (
-    <div className="min-h-screen flex flex-col overflow-x-hidden">
-      {/* Header */}
-      <header className="bg-[#1a1a1a] text-white py-4 px-6 md:px-12 flex items-center justify-between border-b border-[#333] sticky top-0 z-[100] backdrop-blur-md bg-opacity-95">
+    <div className="min-h-screen flex flex-col overflow-x-hidden bg-stone-50">
+      
+      {/* === HEADER / NAVBAR === */}
+      <header className="bg-stone-900 text-stone-100 py-3 px-6 md:px-10 flex items-center justify-between border-b border-stone-800 sticky top-0 z-[100] shadow-md">
         
-        {/* Logo */}
-        <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
-          <div className="text-amber-700 text-2xl md:text-3xl">☕</div>
+        {/* 1. Kiri: Logo */}
+        <div className="flex items-center gap-3 cursor-pointer group" onClick={() => navigate('/home')}>
+          {/* Mengganti Emoji dengan Icon SVG Kopi Sederhana */}
+          <svg className="w-8 h-8 text-amber-600 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M2,21V19H20V21H2M20,8V5H18V8H20M20,3A2,2 0 0,1 22,5V8A2,2 0 0,1 20,10H18V13A4,4 0 0,1 14,17H8A4,4 0 0,1 4,13V3H20M16,5H6V13A2,2 0 0,0 8,15H14A2,2 0 0,0 16,13V5Z" />
+          </svg>
           <div>
-            <h1 className="text-lg md:text-xl font-bold tracking-wider leading-none">KOPI WAE</h1>
-            <p className="text-[8px] md:text-[10px] tracking-[0.2em] text-gray-400 uppercase">Coffee & Roasters</p>
+            <h1 className="text-lg md:text-xl font-extrabold tracking-wider leading-none text-white">KOPI WAE</h1>
+            <p className="text-[9px] md:text-[10px] tracking-[0.2em] text-amber-600/80 uppercase font-semibold">Coffee & Roasters</p>
           </div>
         </div>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center gap-8 text-[11px] font-bold tracking-widest uppercase">
-          <Link to="/" className="hover:text-amber-600 transition">Beranda</Link>
-          
-          <button onClick={handleNavMenu} className="hover:text-amber-600 transition tracking-widest font-bold uppercase">
-            Menu
-          </button>
-          
-          <a href="#" className="hover:text-amber-600 transition">Shop Online</a>
-          <a href="#" className="hover:text-amber-600 transition">Locations</a>
-          
-          {/* Mengubah tag <a> menjadi <button> untuk memicu fungsi navigasi */}
-          <button 
-            onClick={handleNavAuth} 
-            className="hover:text-amber-600 transition tracking-widest font-bold uppercase"
-          >
-            Daftar/Masuk
-          </button>
-        </nav>
+        {/* 2. Tengah: Search Bar (Modern) */}
+        <div className="hidden md:flex flex-1 max-w-md mx-8 relative">
+          <input 
+            type="text" 
+            placeholder="Cari kopi kesukaanmu..." 
+            className="w-full bg-stone-800 text-sm text-white placeholder-stone-400 px-4 py-2 pl-10 rounded-full border border-stone-700 focus:outline-none focus:border-amber-600 focus:ring-1 focus:ring-amber-600 transition-all"
+          />
+          {/* Icon Kaca Pembesar SVG */}
+          <svg className="w-4 h-4 absolute left-4 top-3 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
 
-        {/* Action Buttons */}
-        <div className="flex items-center gap-3 md:gap-6">
-          <button className="hidden sm:block hover:scale-110 transition">🔍</button>
-          <button className="relative hover:scale-110 transition">
-            🛒
-            <span className="absolute -top-2 -right-2 bg-amber-700 text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">3</span>
-          </button>
+        {/* 3. Kanan: Navigasi Desktop & Action */}
+        <div className="flex items-center gap-6">
+          {/* Menu Links */}
+          <nav className="hidden lg:flex items-center gap-6 text-[12px] font-bold tracking-wider uppercase text-stone-300">
+            <Link to="/home" className="hover:text-amber-500 transition-colors">Beranda</Link>
+            <Link to="/home/produk" className="hover:text-amber-500 transition-colors">Produk</Link>
+            <Link to="/home/history" className="hover:text-amber-500 transition-colors">Riwayat</Link>
+            <Link to="/home/profil" className="hover:text-amber-500 transition-colors">Profil</Link>
+          </nav>
+
+          {/* Cart Icon Modern */}
+          {/* Catatan: Kamu perlu menambahkan route "keranjang" di App.jsx nanti */}
+          <Link to="/home/keranjang" className="relative hover:text-amber-500 transition-colors hidden sm:block text-stone-300">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <span className="absolute -top-2 -right-2 bg-amber-600 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold border border-stone-900">3</span>
+          </Link>
+
+          {/* Tombol Logout */}
           <button 
-            onClick={handleNavMenu}
-            className="hidden md:block bg-[#a87a55] px-6 py-2 rounded-full text-[11px] font-black tracking-widest uppercase hover:bg-amber-600 transition-all active:scale-95"
+            onClick={onLogout}
+            className="hidden lg:block border border-stone-600 hover:border-red-500 text-stone-300 hover:text-red-500 hover:bg-red-500/10 px-5 py-2 rounded-full text-[11px] font-bold tracking-wider uppercase transition-all"
           >
-            Pesan Sekarang
+            Keluar
           </button>
 
-          <button className="lg:hidden text-2xl p-1" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? '✕' : '☰'}
+          {/* Tombol Hamburger Mobile */}
+          <button className="lg:hidden text-stone-300 p-1" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
+            </svg>
           </button>
         </div>
       </header>
 
-      {/* Mobile Sidebar Menu */}
-      <div className={`lg:hidden fixed inset-0 z-[90] bg-[#1a1a1a] transition-transform duration-500 ease-in-out ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-        <nav className="flex flex-col items-center justify-center h-full gap-8 text-xl font-black uppercase tracking-widest text-center">
-          <Link to="/" onClick={() => setIsMenuOpen(false)}>Beranda</Link>
+      {/* === MOBILE SIDEBAR MENU === */}
+      <div className={`lg:hidden fixed inset-0 z-[90] bg-stone-900/95 backdrop-blur-md transition-transform duration-300 ease-in-out ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className="flex flex-col items-center justify-center h-full gap-8 text-lg font-bold uppercase tracking-widest text-stone-300">
           
-          <button onClick={handleNavMenu} className="text-amber-600 hover:text-white transition uppercase font-black">
-            Menu
+          {/* Mobile Search Bar */}
+          <div className="w-3/4 relative mb-4">
+            <input 
+              type="text" 
+              placeholder="Cari kopi..." 
+              className="w-full bg-stone-800 text-white px-4 py-3 pl-12 rounded-full focus:outline-none border border-stone-700"
+            />
+            <svg className="w-5 h-5 absolute left-4 top-3.5 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+
+          <Link to="/home" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-500 transition">Beranda</Link>
+          <Link to="/home/produk" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-500 transition">Katalog Produk</Link>
+          <Link to="/home/history" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-500 transition">Riwayat Transaksi</Link>
+          <Link to="/home/keranjang" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-500 transition">Keranjang (3)</Link>
+          <Link to="/home/profil" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-500 transition">Profil Saya</Link>
+          
+          <button 
+            onClick={onLogout} 
+            className="mt-6 border border-red-500/50 text-red-400 px-10 py-3 rounded-full text-sm hover:bg-red-500 hover:text-white transition-all"
+          >
+            Keluar Akun
           </button>
-          
-          <a href="#" onClick={() => setIsMenuOpen(false)}>Shop Online</a>
-          <a href="#" onClick={() => setIsMenuOpen(false)}>Locations</a>
-          
-          {/* Tombol Daftar/Masuk Mobile */}
-          <button onClick={handleNavAuth} className="hover:text-amber-600 transition uppercase font-black">
-            Daftar/Masuk
-          </button>
-          
-          <button onClick={handleNavMenu} className="mt-4 bg-[#a87a55] px-10 py-4 rounded-full text-sm font-black uppercase tracking-[0.2em]">
-            Order Now
-          </button>
-        </nav>
+        </div>
       </div>
 
-      {/* Main Content Area */}
-      <main className={`flex-grow transition-all duration-500 ${isMenuOpen ? 'blur-sm scale-95' : ''}`}>
-        {children}
+      {/* === MAIN CONTENT AREA === */}
+      <main className={`flex-grow transition-all duration-300 ${isMenuOpen ? 'blur-md scale-[0.98]' : ''}`}>
+        <Outlet />
       </main>
+
     </div>
   );
 };

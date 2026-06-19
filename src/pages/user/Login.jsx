@@ -1,17 +1,16 @@
 import React, { useState } from 'react'; // Tambahkan useState
 
-const Login = ({ onLogin }) => {
+const Login = ({ setRole }) => {
   // 1. Definisikan state untuk menampung inputan
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLoginProcess = () => {
-    // 2. Logic pengecekan sederhana
-    // Kamu bisa menyesuaikan email/password admin di bawah ini
     if (email === 'admin' && password === '123') {
-      onLogin('admin');
+      // 2. Ubah pemanggilan fungsinya
+      setRole('admin'); 
     } else if (email !== '' && password !== '') {
-      onLogin('user');
+      setRole('user');
     } else {
       alert('Tolong isi email dan password terlebih dahulu!');
     }
