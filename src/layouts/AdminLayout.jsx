@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 
-export default function AdminLayout({ onLogout }) {
+function AdminLayout({ onLogout }) {
   // Poin 3: React Logic (useState) untuk fitur buka-tutup sidebar
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
@@ -21,8 +21,7 @@ export default function AdminLayout({ onLogout }) {
     /* Poin 2: Flexbox - Membungkus seluruh layar dan membaginya jadi kiri (sidebar) dan kanan (main) */
     <div className="flex h-screen bg-stone-100 font-sans">
       
-      {/* 
-        === SIDEBAR ===
+      {/* === SIDEBAR ===
         Poin 2: Layout Responsif (Mobile & Desktop)
         - Di Mobile: Posisi 'fixed', disembunyikan (-translate-x-full)
         - Di Desktop (md:): Posisi relative, selalu tampil (md:translate-x-0)
@@ -40,7 +39,7 @@ export default function AdminLayout({ onLogout }) {
           <h2 className="text-2xl font-bold text-amber-500">Admin Wae</h2>
         </div>
 
-        {/* Menu Navigasi - Diambil dari struktur folder di image_b1e6f2.jpg */}
+        {/* Menu Navigasi */}
         <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
           {/* Poin 2: Efek Visual (hover:bg-stone-700, transition-colors) */}
           <Link to="/admin" className="block px-4 py-2 rounded-lg hover:bg-stone-700 transition-colors">Dashboard</Link>
@@ -62,8 +61,7 @@ export default function AdminLayout({ onLogout }) {
         </div>
       </aside>
 
-      {/* 
-        === KONTEN KANAN (NAVBAR & MAIN) === 
+      {/* === KONTEN KANAN (NAVBAR & MAIN) === 
         Poin 2: Flexbox (flex-1 flex flex-col)
       */}
       <div className="flex-1 flex flex-col overflow-hidden">
@@ -90,13 +88,12 @@ export default function AdminLayout({ onLogout }) {
             <span className="text-sm font-medium text-stone-600 hidden sm:block">Halo, Admin</span>
             {/* Contoh Avatar Sederhana */}
             <div className="w-10 h-10 rounded-full bg-amber-600 text-white flex items-center justify-center font-bold shadow-md">
-              A
+              
             </div>
           </div>
         </header>
 
-        {/* 
-          === AREA KONTEN UTAMA (OUTLET) === 
+        {/* === AREA KONTEN UTAMA (OUTLET) === 
           Di sinilah halaman seperti Dashboard, Produk, dll akan dirender.
         */}
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-stone-50 p-6">
@@ -115,6 +112,6 @@ export default function AdminLayout({ onLogout }) {
 
     </div>
   );
-};
+} // <--- KURUNG TUTUP INI YANG TADI HILANG
 
 export default AdminLayout;
