@@ -13,26 +13,27 @@ import ManajemenPesanan from './pages/admin/ManajemenPesanan';
 import ManajemenPengguna from './pages/admin/ManajemenPengguna';
 import LaporanPenjualan from './pages/admin/LaporanPenjualan';
 
-// 3. Import Semua Halaman User (Kode Agung)
+// 3. Import Semua Halaman User
 import Login from './pages/user/Login';
+import Register from './pages/user/Register'; // <-- TAMBAHAN IMPORT REGISTER
 import Home from './pages/user/Home';
 import ListProduk from './pages/user/ListProduk';
 import Checkout from './pages/user/Checkout';
 import History from './pages/user/History';
 import Profil from './pages/user/Profil';
+import DetailProduk from './pages/user/DetailProduk'; 
+import Keranjang from './pages/user/Keranjang';       
 
 function App() {
-  // State untuk menyimpan status login dummy ('guest', 'admin', 'user')
   const [role, setRole] = useState('guest');
 
   return (
     <Router>
       <Routes>
         
-        {/* === AREA GUEST (BELUM LOGIN) === */}
-        {role === 'guest' && (
-          <Route path="/" element={<Login setRole={setRole} />} />
-        )}
+        {/* === RUTE AUTH (Berdiri Sendiri) === */}
+        <Route path="/login" element={<Login setRole={setRole} />} />
+        <Route path="/register" element={<Register />} /> {/* <-- RUTE BARU */}
 
         {/* === AREA ADMIN === */}
         {role === 'admin' && (
@@ -46,29 +47,27 @@ function App() {
           </Route>
         )}
 
-        {/* === AREA USER (PELANGGAN) === */}
-        {role === 'user' && (
-          <Route path="/home" element={<UserLayout onLogout={() => setRole('guest')} />}>
-            <Route index element={<Home />} />
-            <Route path="produk" element={<ListProduk />} />
-            <Route path="checkout" element={<Checkout />} />
-            <Route path="history" element={<History />} />
-            <Route path="profil" element={<Profil />} />
-          </Route>
-        )}
+        {/* === AREA PUBLIK & USER (PELANGGAN) === */}
+        <Route path="/home" element={<UserLayout role={role} onLogout={() => setRole('guest')} />}>
+          
+          {/* Rute yang BISA diakses semua orang (Guest & User) */}
+          <Route index element={<Home />} />
+          <Route path="produk" element={<ListProduk />} />
+          <Route path="detail" element={<DetailProduk />} />
 
-        {/* === PROTEKSI REDIRECT === */}
-        {/* Mengembalikan user ke tempat yang benar jika memaksa ketik URL ngawur */}
-        <Route 
-          path="*" 
-          element={
-            <Navigate to={
-              role === 'admin' ? "/admin" : 
-              role === 'user' ? "/home" : 
-              "/"
-            } replace />
-          } 
-        />
+          {/* Rute TERPROTEKSI (Kalau belum login / guest, dilempar otomatis ke /login) */}
+          <Route path="keranjang" element={role === 'user' ? <Keranjang /> : <Navigate to="/login" />} />
+          <Route path="checkout"  element={role === 'user' ? <Checkout />  : <Navigate to="/login" />} />
+          <Route path="history"   element={role === 'user' ? <History />   : <Navigate to="/login" />} />
+          <Route path="profil"    element={role === 'user' ? <Profil />    : <Navigate to="/login" />} />
+        </Route>
+
+        {/* === PROTEKSI REDIRECT URL === */}
+        {/* Jika user baru buka web di localhost:5173, langsung diarahkan ke /home */}
+        <Route path="/" element={<Navigate to="/home" replace />} />
+        
+        {/* Jika ketik URL ngawur, arahkan kembali sesuai role */}
+        <Route path="*" element={<Navigate to={role === 'admin' ? "/admin" : "/home"} replace />} />
         
       </Routes>
     </Router>

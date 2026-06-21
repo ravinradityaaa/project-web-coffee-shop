@@ -1,6 +1,10 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // 1. Import useNavigate
 
-export default function Register({ onNavigate }) {
+export default function Register() { 
+  // 2. Inisialisasi hook navigasi
+  const navigate = useNavigate(); 
+
   const [formData, setFormData] = useState({
     fullName: '',
     username: '',
@@ -11,11 +15,12 @@ export default function Register({ onNavigate }) {
     e.preventDefault();
     console.log("Mendaftar dengan:", formData);
     alert(`Selamat bergabung, ${formData.username}! Silakan login.`);
-    onNavigate('login');
+    
+    // 3. Arahkan ke rute /login setelah sukses daftar
+    navigate('/login'); 
   };
 
   return (
-    /* Mengunci w-full min-h-screen dengan background krem penuh tanpa border hitam */
     <div className="w-full min-h-screen flex items-center justify-center p-6 bg-[#F3F1E3] text-[#1A1A1B] font-sans tracking-tight">
       
       {/* CARD FORM */}
@@ -88,7 +93,7 @@ export default function Register({ onNavigate }) {
         <div className="mt-12 text-center">
           <button 
             type="button" 
-            onClick={() => onNavigate('login')} 
+            onClick={() => navigate('/login')} // 4. Arahkan ke rute /login saat tombol diklik
             className="text-[10px] font-black uppercase tracking-[0.15em] text-[#1A1A1B]/60 hover:text-[#1A1A1B] transition-colors"
           >
             Sudah Punya Akun? <span className="text-[#A67C52] ml-1 underline decoration-2 underline-offset-4">LOGIN</span>

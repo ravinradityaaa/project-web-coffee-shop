@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // 1. Import useNavigate
 import axios from 'axios'; 
 
 export default function ListProduk({ isDarkMode, onOrder }) {
@@ -6,6 +7,9 @@ export default function ListProduk({ isDarkMode, onOrder }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [isLoading, setIsLoading] = useState(true);
+  
+  // 2. Inisialisasi navigate
+  const navigate = useNavigate();
   
   const categories = ['All', 'Coffee', 'Non-Coffee', 'Pastry'];
 
@@ -35,7 +39,6 @@ export default function ListProduk({ isDarkMode, onOrder }) {
         // --- 2. PROSES DATA NON-COFFEE (Ambil 5 item dari varian Iced/Cokelat/Teh) ---
         const rawIced = Array.isArray(icedResponse.data) ? icedResponse.data.slice(0, 5) : [];
         const mappedNonCoffee = rawIced.map((item) => {
-          // Mengubah nama menu agar terasa lebih murni "Non-Coffee" kafe jika ada yang terlalu mirip kopi
           let customName = item.title;
           if (customName.includes("Iced Coffee")) customName = "Matcha Latte Zen";
           if (customName.includes("Frappuccino")) customName = "Chai Tea Latte";
@@ -43,10 +46,10 @@ export default function ListProduk({ isDarkMode, onOrder }) {
           return {
             id: `noncoffee-${item.id}`,
             name: customName,
-            price: 24000 + (item.id % 4) * 2000, // Rp 24.000 - Rp 30.000
+            price: 24000 + (item.id % 4) * 2000, 
             img: item.image,
             cat: 'Non-Coffee',
-            stock: item.id !== 3, // Simulasi satu item habis untuk tes UI
+            stock: item.id !== 3, 
             isHot: item.id % 3 === 0
           };
         });
@@ -56,14 +59,13 @@ export default function ListProduk({ isDarkMode, onOrder }) {
         const mappedMeals = rawMeals.map((item, index) => ({
           id: `meal-${item.idMeal}`,
           name: item.strMeal,
-          price: 18000 + (Number(item.idMeal) % 5) * 2000, // Rp 18.000 - Rp 26.000
+          price: 18000 + (Number(item.idMeal) % 5) * 2000, 
           img: item.strMealThumb,
           cat: 'Pastry',
           stock: true,
           isHot: index % 2 === 0
         }));
 
-        // Gabungkan ketiga kategori dinamis ke dalam satu state
         setProducts([...mappedCoffee, ...mappedNonCoffee, ...mappedMeals]);
         setIsLoading(false);
       })
@@ -73,12 +75,20 @@ export default function ListProduk({ isDarkMode, onOrder }) {
       });
   }, []);
 
-  // Logic Pencarian & Filter Kategori
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = activeCategory === 'All' || product.cat === activeCategory;
     return matchesSearch && matchesCategory;
   });
+
+  // 3. Fungsi untuk menangani klik produk (Navigasi ke halaman detail)
+  // Ubah fungsi ini di dalam ListProduk.jsx
+  const handleDetailClick = (productData) => {
+    // Melempar SATU OBJEK PENUH ke halaman detail melalui 'state'
+    navigate('/home/detail', { 
+      state: { productData: productData } 
+    });
+  };
 
   return (
     <section 
@@ -98,7 +108,6 @@ export default function ListProduk({ isDarkMode, onOrder }) {
               MENU <span className="text-[#A67C52]">KAMI</span>
             </h2>
             
-            {/* Search Bar */}
             <div className="relative">
               <input 
                 type="text" 
@@ -114,7 +123,6 @@ export default function ListProduk({ isDarkMode, onOrder }) {
             </div>
           </div>
 
-          {/* Category Filter */}
           <div className="flex flex-wrap gap-3">
             {categories.map(cat => (
               <button 
@@ -146,7 +154,9 @@ export default function ListProduk({ isDarkMode, onOrder }) {
             filteredProducts.map((p) => (
               <div 
                 key={p.id} 
-                className={`group relative rounded-[3.5rem] p-8 transition-all duration-700
+                // 4. Tambahkan event onClick dan ubah cursor jadi pointer pada card
+                onClick={() => handleDetailClick(p)}
+                className={`group relative rounded-[3.5rem] p-8 transition-all duration-700 cursor-pointer
                   ${isDarkMode ? 'bg-[#252525] hover:bg-[#2a2a2a]' : 'bg-gray-50 hover:bg-white hover:shadow-2xl'}`}
               >
                 {/* Thumbnail */}
@@ -164,7 +174,6 @@ export default function ListProduk({ isDarkMode, onOrder }) {
                       ${!p.stock ? 'grayscale' : ''}`} 
                     alt={p.name} 
                     onError={(e) => {
-                      // Fallback image estetik jika URL API bermasalah
                       e.target.src = "https://images.unsplash.com/photo-1534706936160-d5ee67737249?q=80&w=400&auto=format&fit=crop";
                     }}
                   />
@@ -195,7 +204,11 @@ export default function ListProduk({ isDarkMode, onOrder }) {
                   
                   <button 
                     disabled={!p.stock}
-                    onClick={() => onOrder(p.name)}
+                    onClick={(e) => {
+                      // 5. PENTING: Mencegah klik tombol "+" memicu klik pada card (stopPropagation)
+                      e.stopPropagation(); 
+                      onOrder(p.name);
+                    }}
                     className={`h-14 w-14 rounded-2xl flex items-center justify-center text-2xl font-black transition-all duration-500 flex-shrink-0
                       ${!p.stock 
                         ? 'bg-gray-300 cursor-not-allowed opacity-50' 
